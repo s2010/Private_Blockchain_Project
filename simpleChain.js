@@ -35,9 +35,17 @@ class Blockchain{
     }
     createGenesisBlock(){
         return new Block("First block in the chain - Genesis block");
+    }
+    // getLatest block method
+    getLatestBlock(){
+        return this.chain[this.chain.length -1];
     }    
     // Add new block
     addBlock(newBlock){
+      // block height
+      newBlock.height = this.chain.length
+      // UTC timestamp
+      newBlock.time = new Date().getTime().toString().slice(0,-3);
       // previous block hash
       if(this.chain.length>0){
         newBlock.previousBlockHash = this.chain[this.chain.length-1].hash;
