@@ -11,4 +11,5 @@
  }
 
 // STEP 2 : Block data model
-// Step 3 : Store Blocks
+// STEP 3 : Store Blocks
+// STEP 4 : Link Blocks
