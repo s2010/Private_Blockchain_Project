@@ -1,0 +1,14 @@
+// STEP 1: Block data model 
+
+{
+   "hash": "",
+   "height": 0,
+   "version": 536870912,
+   "versionHex": "20000000",
+   "body": [],
+   "time": 0,
+   "previousblockhash": ""
+ }
+
+// STEP 2 : Block data model
+// Step 3 : Store Blocks
