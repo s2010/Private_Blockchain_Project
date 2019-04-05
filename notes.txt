@@ -14,6 +14,6 @@
 // STEP 3 : Store Blocks
 // STEP 4 : Link Blocks
 Testing:
-let blockchain = new Blockchain()
-blockchain.addBlock(new Block('Test block wooohoo!!'))
-blockchain.chain
+let blockchainData = new BlockchainData()
+blockchainData.addBlock(new Block('Test block wooohoo!!'))
+blockchainData.chain
