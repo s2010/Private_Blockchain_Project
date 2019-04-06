@@ -8,7 +8,10 @@ To setup the project for review do the following:
 2. Navigate to folder & Run command __npm install__ to install the project dependencies.
 3. Run command `node` to launch Node.js REPL.
 4. load the project `simpleChain.js` class.
-5. create blockchainData instance `let blockchainData = new BlockchainData('./data')`
+
+5. Requirement1 : create BlockchainData instance `let blockchainData = new BlockchainData('./chaindata')`
+6. create Blockchain instance `let blockchain = new Blockchain(blockchainData)`
+7. Test adding new block `blockchain.addBlock(new Block('Test block wooohoo!!'))`
 
 
 
