@@ -119,7 +119,7 @@ class Blockchain{
     }
 
     getChain() {
-        return this.chain;
+        return console.log(this.chain);
     }
 
     addBlock(newBlock){
@@ -160,6 +160,7 @@ class Blockchain{
         let _this = this;
         return new Promise((resolve, reject) => {
             _this.chain.getChainLength().then(currentLength => {
+                console.log(`Block length is ${currentLength}`);
                 resolve(currentLength);
             }).catch(err => {
                 reject(new Error(`${err.message}`));
@@ -170,8 +171,10 @@ class Blockchain{
     getBlock(blockHeight){
         return new Promise((resolve, reject) => {
             this.chain.getBlock(blockHeight).then(block => {
+                console.log(`Block is ${block.hash}`);
                 resolve(block);
             }).catch(err => {
+                console.log(`${err.message}`);
                 reject(new Error(`${err.message}`));
             });
         });
