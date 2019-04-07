@@ -160,8 +160,9 @@ class Blockchain{
         let _this = this;
         return new Promise((resolve, reject) => {
             _this.chain.getChainLength().then(currentLength => {
-                console.log(`Block length is ${currentLength}`);
-                resolve(currentLength);
+                let newLength = currentLength-2 ;
+                console.log(`Block length is ${newLength}`);
+                resolve(newLength);
             }).catch(err => {
                 reject(new Error(`${err.message}`));
             });
@@ -171,7 +172,7 @@ class Blockchain{
     getBlock(blockHeight){
         return new Promise((resolve, reject) => {
             this.chain.getBlock(blockHeight).then(block => {
-                console.log(`Block is ${block.hash}`);
+                console.log(`Block hash : ${block.hash}`);
                 resolve(block);
             }).catch(err => {
                 console.log(`${err.message}`);
@@ -188,6 +189,7 @@ class Blockchain{
                 block.hash = '';
                 let validBlockHash = SHA256(JSON.stringify(block)).toString();
                 if (blockHash === validBlockHash) {
+                    console.log(`Block is valid .`);
                     resolve(true);
                 }
                  else {
@@ -207,6 +209,7 @@ class Blockchain{
                     for(let i = 0; i < currentLength; i++) {
                         allBlockValidations.push(
                             _this.validateBlock(i)
+                               //check for the hash of the current block matching the previousBlockHash of the next block.
                                 .catch(err => {
                                     errors.push(err);
                                 })
