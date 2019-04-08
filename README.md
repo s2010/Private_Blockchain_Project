@@ -10,7 +10,18 @@ To setup the project for review do the following:
 4. load the project __`simpleChain.js`__ class.
 5. create BlockchainData instance __`let blockchainData = new BlockchainData('./chaindata')`__
 6. create Blockchain instance __`let blockchain = new Blockchain(blockchainData)`__
-7. Test adding new block __`blockchain.addBlock(new Block('Test block wooohoo!!'))`__
 
+### Requirement 1 Use getBlock(blockHeight) function
+ __`blockchain.addBlock(new Block('Test block wooohoo!!'))`__
 
+### Requirement 2 Use getBlockHeight() function 
+ __`blockchain.getBlockHeight()`__
 
+### Requirement 3 Use getBlock(blockHeight) function 
+ __`blockchain.getBlock(3)`__
+
+### Requirement 4 Use validateBlock(blockHeight) function 
+ __`blockchain.validateBlock(3)`__
+
+### Requirement 5 Use validateChain() function 
+ __`blockchain.validateChain()`__

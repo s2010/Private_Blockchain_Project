@@ -19,3 +19,15 @@ Testing:
 3) bk.addBlock(new Block('Test block wooohoo!!'))
 bkd.addBlock(new Block('Test block wooohoo!!'))
 bkd.chain
+
+req 1) Adding new block 
+bk.addBlock(new Block('Test block wooohoo!!'))
+req 2) Use get Block Height 
+bk.getBlockHeight()
+req 3) Use getBlock(blockHeight)
+bk.getBlock(3)
+req 4) Use validateBlock(blockHeight)
+req 5) Use validateChain()
+bk.validateChain()
+
+

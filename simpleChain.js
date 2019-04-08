@@ -189,7 +189,7 @@ class Blockchain{
                 block.hash = '';
                 let validBlockHash = SHA256(JSON.stringify(block)).toString();
                 if (blockHash === validBlockHash) {
-                    console.log(`Block is valid .`);
+                    console.log(`Block is valid , Hash: ${validBlockHash}`);
                     resolve(true);
                 }
                  else {
@@ -200,9 +200,13 @@ class Blockchain{
     }
 
     validateChain() {
-        let errors = [];
-        let _this = this;
-        return new Promise((resolve, reject) => {
+     let errors = [];
+     let _this = this;
+     let blockHash = block.hash;
+     let previousHash = ''
+     let isValidBlock = false
+
+     return new Promise((resolve, reject) => {
             _this.chain.getChainLength()
                 .then(currentLength => {
                     let allBlockValidations = [];
@@ -214,20 +218,26 @@ class Blockchain{
                                     errors.push(err);
                                 })
                         );
+                        console.log(allBlockValidations);
                     }
                     return Promise.all(allBlockValidations);
                 })
+                // .then(n => {
+                //     return 
+                // })
                 .then(value => {
                     if(errors.length > 0) {
+                        console.log('Block errors = ' + errors.length);
                         reject(errors);
                     } 
                     else {
+                        console.log('No errors detected');
                         resolve(true);
                     }
                 })
                 .catch(err => {
                     reject(err);
                 });
-        });
+     });
     }
 }   
