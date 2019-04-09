@@ -160,7 +160,7 @@ class Blockchain{
         let _this = this;
         return new Promise((resolve, reject) => {
             _this.chain.getChainLength().then(currentLength => {
-                let newLength = currentLength-2 ;
+                let newLength = currentLength-1 ;
                 console.log(`Block length is ${newLength}`);
                 resolve(newLength);
             }).catch(err => {
@@ -180,8 +180,8 @@ class Blockchain{
             });
         });
     }
-
-    validateBlock(blockHeight,previousHash=""){
+   
+    validateBlock(blockHeight){
         let _this = this;
         return new Promise(function(resolve, reject){
             _this.chain.getBlock(blockHeight).then(block => {
@@ -192,89 +192,50 @@ class Blockchain{
                     console.log(`Block is valid , Hash: ${validBlockHash}`);
                     resolve(true);
                 }
-                else {
-                    reject(new Error('Block #'+blockHeight+' invalid hash:\n'+blockHash+'<>'+validBlockHash));
-                }
-                if (block.previousHash === previousHash) {
-                    console.log(`Previous block hash is valid , Hash: ${block.previousHash}`);
-                    resolve(true);
-                }
                  else {
-                    reject(new Error('Block #'+blockHeight+' invalid previous hash:\n'+block.previousHash+'<>'+previousHash));
+                    reject(new Error('Block #'+blockHeight+' invalid hash:\n'+blockHash+'<>'+validBlockHash));
                 }
             });
         });
     }
+    validateChain() {
+     let errors = [];
+     let _this = this;
+     let blockHash = block.hash;
+     let previousHash = ''
+     let isValidBlock = false
 
-    validateChain(blockHeight=0){
-        let _this = this;
-        return new Promise(function(resolve, reject){
-            console.log('dsds');
-            if(blockHeight < _this.getChainLength){
-                this.validateBlock(blockHeight, this.chain.getBlock(blockHeight).previousHash).then(this.validateChain(blockHeight+1));
-            }
-            else
-            {
-                console.log('Blockchain is valid');
-                resolve(true);
-            }
-        });
+     return new Promise((resolve, reject) => {
+            _this.chain.getChainLength()
+                .then(currentLength => {
+                    let allBlockValidations = [];
+                    for(let i = 0; i < currentLength; i++) {
+                        allBlockValidations.push(
+                            _this.validateBlock(i)
+                               //check for the hash of the current block matching the previousBlockHash of the next block.
+                                .catch(err => {
+                                    errors.push(err);
+                                })
+                        );
+                        console.log(allBlockValidations);
+                    }
+                    return Promise.all(allBlockValidations);
+                })
+                .then(value => {
+                    if(errors.length > 0) {
+                        console.log('Block errors = ' + errors.length);
+                        reject(errors);
+                    } 
+                    else {
+                        console.log('No errors detected');
+                        resolve(true);
+                    }
+                })
+                .catch(err => {
+                    reject(err);
+                });
+     });
     }
-    // validateBlock(blockHeight){
-    //     let _this = this;
-    //     return new Promise(function(resolve, reject){
-    //         _this.chain.getBlock(blockHeight).then(block => {
-    //             let blockHash = block.hash;
-    //             block.hash = '';
-    //             let validBlockHash = SHA256(JSON.stringify(block)).toString();
-    //             if (blockHash === validBlockHash) {
-    //                 console.log(`Block is valid , Hash: ${validBlockHash}`);
-    //                 resolve(true);
-    //             }
-    //              else {
-    //                 reject(new Error('Block #'+blockHeight+' invalid hash:\n'+blockHash+'<>'+validBlockHash));
-    //             }
-    //         });
-    //     });
-    // }
-    // validateChain() {
-    //  let errors = [];
-    //  let _this = this;
-    //  let blockHash = block.hash;
-    //  let previousHash = ''
-    //  let isValidBlock = false
-
-    //  return new Promise((resolve, reject) => {
-    //         _this.chain.getChainLength()
-    //             .then(currentLength => {
-    //                 let allBlockValidations = [];
-    //                 for(let i = 0; i < currentLength; i++) {
-    //                     allBlockValidations.push(
-    //                         _this.validateBlock(i)
-    //                            //check for the hash of the current block matching the previousBlockHash of the next block.
-    //                             .catch(err => {
-    //                                 errors.push(err);
-    //                             })
-    //                     );
-    //                     console.log(allBlockValidations);
-    //                 }
-    //                 return Promise.all(allBlockValidations);
-    //             })
-    //             .then(value => {
-    //                 if(errors.length > 0) {
-    //                     console.log('Block errors = ' + errors.length);
-    //                     reject(errors);
-    //                 } 
-    //                 else {
-    //                     console.log('No errors detected');
-    //                     resolve(true);
-    //                 }
-    //             })
-    //             .catch(err => {
-    //                 reject(err);
-    //             });
-    //  });
-    // }
 }   
 let blockchainData = new BlockchainData('./chaindata');
 let blockchain = new Blockchain(blockchainData);
