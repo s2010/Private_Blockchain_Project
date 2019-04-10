@@ -181,50 +181,16 @@ class Blockchain{
         });
     }
    
-    // validateBlock(blockHeight){
-    //     let _this = this;
-    //     return new Promise(function(resolve, reject){
-    //         _this.chain.getBlock(blockHeight).then(block => {
-    //             let blockHash = block.hash;
-    //             block.hash = '';
-    //             let validBlockHash = SHA256(JSON.stringify(block)).toString();
-    //             if (blockHash === validBlockHash) {
-    //                 console.log(`Block is valid , Hash: ${validBlockHash}`);
-    //                 resolve(true);
-    //             }
-    //              else {
-    //                 reject(new Error('Block #'+blockHeight+' invalid hash:\n'+blockHash+'<>'+validBlockHash));
-    //             }
-    //         });
-    //     });
-    // }
     validateBlock(blockHeight){
         let _this = this;
         return new Promise(function(resolve, reject){
             _this.chain.getBlock(blockHeight).then(block => {
-                let _block = this;
                 let blockHash = block.hash;
                 block.hash = '';
                 let validBlockHash = SHA256(JSON.stringify(block)).toString();
                 if (blockHash === validBlockHash) {
-                    if(blockHeight == 0 && block.previousHash == ""){
-                        console.log(`Block is valid , Hash: ${validBlockHash}`);
-                        resolve(true);
-                    } // validate genesys
-                    else if(blockHeight > 0){
-                         _this.chain.getBlock(blockHeight - 1).then(previousblock => {
-                            if(previousblock.hash == _block.previousHash){
-                                console.log(`Block is valid , Hash: ${validBlockHash}`);
-                                resolve(true);
-                            }
-                            else{
-                                reject(new Error('Block #'+blockHeight+' invalid 1 previous hash:\n'+previousblock.hash+'<>'+_block.previousHash)); // rejecting genesys because previousHash should be ""
-                            }
-                        });
-                    }
-                    else{
-                       reject(new Error('Block #'+blockHeight+' invalid 2 previous hash:\n""<>'+block.previousHash)); // rejecting genesys because previousHash should be ""
-                    }
+                    console.log(`Block is valid , Hash: ${validBlockHash}`);
+                    resolve(true);
                 }
                  else {
                     reject(new Error('Block #'+blockHeight+' invalid hash:\n'+blockHash+'<>'+validBlockHash));
@@ -232,7 +198,6 @@ class Blockchain{
             });
         });
     }
-
     validateChain() {
         let errors = [];
         let _this = this;
