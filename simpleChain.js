@@ -80,7 +80,7 @@ class BlockchainData {
             });
         });
     }
-    getChainLength() {
+    getChainLength(getBlockHeight=false) {
         let _this = this;
         return new Promise(function(resolve, reject){
             let length = 0;
@@ -92,7 +92,7 @@ class BlockchainData {
                     reject(new Error(`error in DB Read Stream. ${err.message}`));
                 })
                 .on('close', function(){
-                    resolve(length);
+                    resolve(getBlockHeight ? length - 1 : length); 
                 });
         });
     }
@@ -117,11 +117,9 @@ class Blockchain{
             throw err;
         });
     }
-
     getChain() {
         return console.log(this.chain);
     }
-
     addBlock(newBlock){
         let _this = this;
         return new Promise((resolve, reject) => {
@@ -155,20 +153,10 @@ class Blockchain{
             });
         });
     }
-
     getBlockHeight() {
         let _this = this;
-        return new Promise((resolve, reject) => {
-            _this.chain.getChainLength().then(currentLength => {
-                let newLength = currentLength-1 ;
-                console.log(`Block length is ${newLength}`);
-                resolve(newLength);
-            }).catch(err => {
-                reject(new Error(`${err.message}`));
-            });
-        });
+        return  _this.chain.getChainLength(true);
     }
-
     getBlock(blockHeight){
         return new Promise((resolve, reject) => {
             this.chain.getBlock(blockHeight).then(block => {
@@ -181,7 +169,7 @@ class Blockchain{
         });
     }
    
-    validateBlock(blockHeight){
+    validateBlock(blockHeight, checkPrevious=false){
         let _this = this;
         return new Promise(function(resolve, reject){
             _this.chain.getBlock(blockHeight).then(block => {
@@ -189,8 +177,32 @@ class Blockchain{
                 block.hash = '';
                 let validBlockHash = SHA256(JSON.stringify(block)).toString();
                 if (blockHash === validBlockHash) {
-                    console.log(`Block is valid , Hash: ${validBlockHash}`);
-                    resolve(true);
+                    if(checkPrevious == true){
+                        if(blockHeight == 0){ //Special case for genesis, previous hash must be empty
+                            if(block.previousBlockHash === ""){
+                                console.log(`Block is valid , Hash: ${validBlockHash}`);
+                                resolve(true);
+                            }
+                            else{
+                                reject(new Error('Block #'+blockHeight+' invalid previous hash:\n'+block.previousBlockHash+'<>'+previousBlock.hash));
+                            }
+                        }
+                        else{
+                            _this.chain.getBlock(blockHeight - 1).then(previousBlock => {
+                                if(previousBlock.hash === block.previousBlockHash){
+                                    console.log(`Block is valid , Hash: ${validBlockHash}`);
+                                    resolve(true);
+                                }
+                                else {
+                                    reject(new Error('Block #'+blockHeight+' invalid previous hash:\n'+block.previousBlockHash+'<>'+previousBlock.hash));
+                                }
+                            });
+                        }
+                    }
+                    else{
+                        console.log(`Block is valid , Hash: ${validBlockHash}`);
+                        resolve(true);
+                    }
                 }
                  else {
                     reject(new Error('Block #'+blockHeight+' invalid hash:\n'+blockHash+'<>'+validBlockHash));
@@ -207,7 +219,7 @@ class Blockchain{
                     let allBlockValidations = [];
                     for(let i = 0; i < currentLength; i++) {
                         allBlockValidations.push(
-                            _this.validateBlock(i)
+                            _this.validateBlock(i, true)
                                 .catch(err => {
                                     errors.push(err);
                                 })
@@ -217,8 +229,10 @@ class Blockchain{
                 })
                 .then(value => {
                     if(errors.length > 0) {
+                        console.log(`Blockchain is not valid.`);
                         reject(errors);
                     } else {
+                        console.log(`Blockchain is valid.`);
                         resolve(true);
                     }
                 })
@@ -227,9 +241,9 @@ class Blockchain{
                 });
         });
     }
+
 }   
 let blockchainData = new BlockchainData('./chaindata');
 let blockchain = new Blockchain(blockchainData);
-blockchain.addBlock(new Block('block 1'));
-blockchain.addBlock(new Block('block 2'));
-blockchain.addBlock(new Block('block 3'));
+// blockchain.addBlock(new Block('testing block')).then(resp => {console.log(resp)});
+blockchain.getBlockHeight().then(resp => {console.log(resp)});
